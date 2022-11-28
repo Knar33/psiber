@@ -1,0 +1,45 @@
+body {
+    background-color: #000000; 
+    color: #00ff00; 
+    margin: 5px;
+    text-align: left;
+    font-family: monospace;
+}
+
+pre {
+    width:100%;
+    font-size: .85vw; 
+}
+
+img {
+    width:100%;
+}
+
+a:link {
+    color: rgb(0, 125, 0);
+    text-decoration: underline;
+}
+  
+a:visited {
+    color: rgb(0, 175, 0);
+    text-decoration: underline;
+}
+
+a:hover {
+    color: rgb(0, 255, 0);
+    text-decoration: none;
+}
+
+a:active {
+    color: rgb(0, 255, 0);
+    text-decoration: none;
+}
+
+p {
+    margin: 10px;
+}
+
+div {
+    width: 75%;
+    margin: auto;
+}
