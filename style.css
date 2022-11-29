@@ -1,15 +1,16 @@
 body {
-    background-color: #000000; 
-    color: #00ff00; 
+    background-color: #010c00; 
+    color: #00bc00; 
     margin: 5px;
     text-align: left;
     font-family: monospace;
-    margin: 10px;
+    margin: 15px;
 }
 
 pre {
     width:100%;
     font-size: .85vw; 
+    color: #007d00; 
 }
 
 img {
@@ -17,12 +18,12 @@ img {
 }
 
 a:link {
-    color: rgb(0, 125, 0);
+    color: #007d00;
     text-decoration: underline;
 }
   
 a:visited {
-    color: rgb(0, 175, 0);
+    color: #007d00;
     text-decoration: underline;
 }
 
@@ -37,6 +38,11 @@ a:active {
 }
 
 div {
-    width: 75%;
+    width: 100%;
+    max-width: 666px;
     margin: auto;
+}
+
+h1, h2, h3 {
+    text-align: center;
 }
