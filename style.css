@@ -18,22 +18,22 @@ img {
 }
 
 a:link {
-    color: #007d00;
+    color: #00bc00;
     text-decoration: underline;
 }
   
 a:visited {
-    color: #007d00;
+    color: #00bc00;
     text-decoration: underline;
 }
 
 a:hover {
-    color: rgb(0, 255, 0);
+    color: #007d00;
     text-decoration: none;
 }
 
 a:active {
-    color: rgb(0, 255, 0);
+    color: #007d00;
     text-decoration: none;
 }
 
@@ -43,6 +43,7 @@ div {
     margin: auto;
 }
 
-h1, h2, h3 {
+h1 {
     text-align: center;
 }
+
