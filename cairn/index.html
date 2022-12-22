@@ -8,6 +8,46 @@
 
 <div>
   <h1>Cairn</h1>
+
+  <p>
+    cairn [kairn]<br>
+    noun<br>
+    a heap of stones set up as a landmark, monument, tombstone, etc. (dictionary.com)
+  </p>
+
+  <h2>Summary</h2>
+
+  <p>
+    Cairn is a multiplayer virtual web experience where authenticated users can move and stack a collection of rocks on an island. 
+    The rocks will be locked in place after a period of time, forming a final piece of collaborative artwork.
+  </p>
+
+  <h2>Design</h2>
+  <p>
+    Cairn will be built as a [<a href="https://hyperfy.io/" target="new">Hyperfy</a>] world with a custom app <br>
+    Users can authenticate by signing in with a wallet containing a Hyperfy World token. <br>
+    Authenticated Users can click a stone and it will go into their hand if: <br>
+    <ol>
+      <li>there are no stones on top of it</li>
+      <li>the user has no stone in their hand</li>
+      <li>there are no users on top of it</li>
+    </ol>
+    Authenticated users with a stone in their hand can click to place the stone down at the cursor location if: <br>
+    <ol>
+      <li>the surface normal is facing upwards (you have to obey gravity)</li>
+      <li>there are no users standing in the vicinity</li>
+    </ol>
+    Users that log out with a stone in their hand drop it on the ground  <br><br>
+
+    I will release a contract and airdrop free tokens to the last person that touched each stone, or send one to each of the top active users if there is a lot of activity.<br>
+    The stones will be procedurally generated gltf files which I'm hoping I can do entirely on-chain. If I can't manage that I will generate them off-chain and release a static collection.
+  </p>
+
+  <h2>Development</h2>
+  <p>
+    (੭｡╹▿╹｡)੭ 
+  </p>
+
 </div>
 
 <pre>                                                                                                                 
@@ -74,6 +114,7 @@
 <div class="center">
 Hyperlinks<br>
 --------------------------------<br>
+[<a href="https://m3org.com/" target="new">M3</a>] 
 [<a href="https://omigroup.org/" target="new">OMI</a>] <br>
 
 [<a href="https://hyperfy.io/" target="new">Hyperfy</a>] 
