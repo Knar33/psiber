@@ -44,7 +44,8 @@ a:active {
 div {
     width: 100%;
     max-width: 666px;
-    margin: auto;
+    margin-left: auto;
+    margin-right: auto;
 }
 
 h1 {
@@ -53,4 +54,7 @@ h1 {
 
 .center {
     text-align: center;
+}
+html,body{
+    overflow-x: hidden;
 }
