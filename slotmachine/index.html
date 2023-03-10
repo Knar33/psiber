@@ -8,16 +8,63 @@
 
 <div>
   <h1>Slot Machine - Hyperfy App</h1>
-
+  Published 2023-03-09 by Knar
   <h2>Summary</h2>
   <p>
-
+    For the last few years I've been in a bit of a rut development-wise. I was stuck in design hell with a bunch of ideas and I didn't know where to start. I realized I just needed to start building so I got my feet wet with the Hyperfy SDK by making an interactive slot machine.
   </p>
-
-
+  <img src="slotmachine.png">
+  <h2>Hyperfy</h2>
+  <p>
+    [<a href="https://hyperfy.io" target="new">Hyperfy</a>] is a web-based metaverse platform that has quickly become the go-to place for fans of the open metaverse. Anyone can spawn into a Hyperfy world anonymously on practically any device, voice/text chat with other users, and equip avatars by dragging a .vrm file into the world. Users who authenticate using an Ethereum wallet gain access to any compatible VRM avatars they own (ones containing a vrm_url tag in the metadata) and are able to mint their own customizable worlds. I currently own two Hyperfy worlds that are still under construction, one of which will eventually become the [<a href="https://hyperfy.io/psiber" target="new">ΨBER HQ</a>].
+  </p>
+  <p>  
+    The world building tools make things easy for the average world owner but the true power of Hyperfy lies in the SDK. Under the hood, Hyperfy runs a react-based component system. Everything in Hyperfy runs as an isolated app and you can create your own apps using the SDK. Apps can be programmed using javascript, React, and a set of functions exposed by the SDK. Almost anything can be built using the SDK and if you find something that you're unable to do, the developers will usually add it if you ask nicely. You don't need to be a React expert to get started, you just need to learn the basics like how components are rendered and the useState/useEffect hooks. 
+  </p>
+  <img src="hyperfy.png">
+  <h2>Slot Machine Jones</h2>
+  <p>
+    As I was brainstorming for a simple app to get started with the SDK, I noticed [<a href="https://twitter.com/em0tionull" target="new">Emotionull</a>] aka Phetta struggling with ChatGPT to create a slot machine for his recent NFT avatar drop Slot Machine Jones. I love helping people who try to help themselves, so I decided to create the app for him. The idea for the app is simple: pull the handle and the wheels start spinning to a random combination with an accompanying sound. When the wheels stop, if you get 3 of the same icon in a row it plays a winning sound plus the sound of coins falling into a tray. If you lose it plays a losing sound. 
+  </p>
+  <img src="slotmachinejones.png">
+  <h2>Modeling</h2>
+  <p>
+    I started off with the models by making a cylinder in blender. I created it using 30 edge faces so that I could evenly spread the graphics on the wheel. I used the texture paint tools to draw a black dot on every fifth edge face, then exported the texture for editing in GIMP. To get the graphics I downloaded the Slot Machine Jones vrm from ipfs (url taken from the nft metadata) and exported the slot machine texture. The real Slot Machine Jones only has four graphics on the wheels, so I dug around for some similar hand-drawn graphics by Emotionull. I got one from a gif of Phetta slapping his ass, but I couldn't find another suitable image so I googled and found a picture of a weed joint on [<a href="https://www.vectorstock.com/royalty-free-vector/quirky-hand-drawn-cartoon-lit-joint-vector-24085207" target="new">Vectorstock</a>] - Quirky hand drawn cartoon lit joint, perfect. After editing the texture in GIMP and re-importing it into blender, I imported the finished cylinder into Hyperfy and adjusted the default rotation/scale until it felt like the appropriate size. I didn't want to adjust the transform in the app code, I just wanted it to be right out of the box.
+  </p>
+  <img src="wheeltexture.png">
+  <p>
+    For the body of the slot machine I took the Slot Machine Jones vrm and cut off the legs, arms, and head, then filled in the holes and remapped the new UV faces so that it looked smooth. I needed the lever to be a separate model so I could animate it and have only that part clickable, so I exported one version of the model where I cut out the lever and filled in the hole, and another version of the model where I cut everything else out leaving just the lever. I imported these models into Hyperfy and adjusted the scale/rotation so that the wheels fit inside perfectly. I played with the positions and got everything positioned correctly relative to the world origin [0,0,0] and wrote down the position offset for each model so that I could set them correctly in the app code later.
+  </p>
+  <img src="models.png">
+  <h2>Coding</h2>
+  <p>
+    I started by copying the sample Treasure Chest code that you get when you install the Hyperfy SDK. I removed most of the code and added my model tags into the return of the default function. I copied the positions of the models that I figured out earlier into the position properties of each model tag, then loaded the app with just models to make sure it all looked right. I ended up having to manually tweak the final scale of the lever and machine body, but ideally those scale adjustments would all be done in Blender (this was really tedious).
+  </p>
+  <p>
+    I then wrote out some pseudo-code for the spin functionality. The lever has an onClick function that fires when you click it. When that function runs I check to see if the wheel is already spinning (basically if a certain amount of time has elapsed since the last spin) and exit early if so. If the machine isn't spinning, I set a new time that the wheel was spun (spinStartTime), roll a random combination of final positions for the three wheels, then broadcast those values across the network to each player. Hyperfy doesn't use a server: players sync their data between each other, so this broadcast originates from whoever pulls the lever and all players get the updated spinStartTime and spinCombination then handle everything locally from there. 
+  </p>
+  <p>
+    When a player receives an updated value for spinStartTime, it triggers a useEffect function which is React's way of modifying things after a render. When this happens I start playing the wheel spinning noise then create a new World.onUpdate function. World.onUpdate functions are called by the hyperfy engine every time the gameplay advances a "tick", which happens every 16 miliseconds if you're running at 60fps. Every time an update happens I check to see if enough time has elapsed for the spin to be complete. If the spin is completed I play a sound depending on the result of the spin, and if not I animate the position of the wheel and the lever towards their final positions. 
+  </p>
+  <p>
+    The animation is advanced using tweens which are functions that, given a starting and ending number, give us an intermediate value between the two values when we pass in the % of progress. This lets us do more natural looking animations using quadratic functions that ease in/out of motion instead of suddenly jerking and moving at a linear rate then making a dead stop. The total final rotation amount we do for the wheels is 10 full rotations (3600 degrees) plus a random number between 0-5 (based on the spinCombination which was broadcast) multiplied by 60, which gives us a random number between 3600-3900. Every frame we rotate the wheels along their x axis by some amount between the starting rotation (captured when the lever is pulled) and the final rotation which is 10+ full rotations away, using the tween function. The lever animation has two tweens, a quick animation for the handle going down, and a slower animation for the handle rising back up.
+  </p>
+  <img src="tweens.png">
+  <p>
+    If enough time has elapsed since the player spun the wheel then I wrap things up by checking if the player won (if the three values in the spin combination are all the same), pause the spinning sound, then play a winning or losing sound depending on the result. I ended up using some royalty-free sounds from [<a href="https://pixabay.com/sound-effects/" target="new">Pixabay</a>] which adds to the fun of spinning the wheels and makes it feel more real. Because the x rotation for each wheel is some value between 3600-3900, I need to reset the wheels back to a value between 0-360 so that the next spin goes around 10 full rotations again. After the sounds are played and the wheels are reset, I clean up the world.onUpdate function by invoking the callback that it gives me when I create the function. Then the lever is ready for another spin.
+  </p>
+  <h2>Conclusion</h2>
+  <p>
+    I really enjoyed getting back into interactive 3d coding using the Hyperfy SDK. I love Hyperfy and see it as the first real step towards an open metaverse. All of my code and project files are available on [<a href="https://github.com/Knar33/slotmachine-hyperfy" target="new">Github</a>]. I heavily commented the index.js so check it out if you're interested in learning the Hyperfy SDK and feel free to use any of the code in your own projects. 
+  </p>
+  <p>
+    Thanks for reading!
+  </p>
 </div>
+<pre>
 
-<pre>                                                                                                                 
+  
+  
                                                                                                                                                                       *(((((((((#/                      
                                                                                                                                                                    /###############,                    
                                                                                                                                                                   (###############(                     
@@ -94,7 +141,7 @@
                ,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,                    
                 ,..,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,                      
                  ,..........,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,*                       
-                   .............................................................................................................,.............................................,                         
+                   ...........................................................................................................................................................,                         
                     ,.......................................................................................................................................................,*                          
                       ,....................................................................................................................................................,                            
                        *.................................................................................................................................................,*                             

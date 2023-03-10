@@ -14,7 +14,11 @@ pre {
 }
 
 img {
-    width:100%;
+    width:75%; 
+    display: block;
+    margin-left: auto;
+    margin-right: auto;
+    border: 1px solid #007d00; 
 }
 
 a:link {
