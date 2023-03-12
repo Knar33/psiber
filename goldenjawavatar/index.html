@@ -1,0 +1,93 @@
+<html>
+  <head>
+    <link rel="stylesheet" href="../style.css">
+  </head>
+<body>
+
+[<a href="../">Home</a>]<br>
+
+<div>
+  <h1>Golden Jaw - Avatar</h1>
+  Published 2023-03-12 by Knar
+  <h2>Summary</h2>
+  <p>
+    Near the end of 2021 I made my first custom Avatar using Vroid Studio as part of my [<a href="https://github.com/M3-org/git-gud" target="new">M3 Onboarding</a>]. It's a .vrm avatar which works in many platforms including Hyperfy and Webaverse by having the correct rig and bone setup. This avatar has served me well for over a year but I want to create something from scratch that is more optimized. 
+  </p>
+  <img src="goldenjawvroid.png">
+  <h2>Golden Jaw</h2>
+  <p>
+    Before getting into the avatar creation process I need to explain what this is all for. Golden Jaw is my Metaverse Original Character, a skeleton with a jawbone made of gold. Gathering inspiration from the NFT [<a href="https://www.lootproject.com/" target="new">Loot Project</a>] I picked some simple words to describe my character in an abstract way. Golden Jaw has a Skeleton body, Gold lower jawbone, gold lower teeth, and a black hood. Sometimes these attributes might be missing from an iteration of Golden Jaw but that's fine, they serve as a general guideline. For example Golden Jaw can be a human with skeleton face paint and a gold lower grill. Instead of a black hood he might have a black hat or helmet. Sometimes he might just be a naked skeleton with the golden jaw. It doesn't even have to resemble a skeleton as long as there's some kind of gold adornment on the bottom of the head.
+  </p>
+  <img src="goldenjawcollage.png">
+
+  <h2>Avatar Specifications</h2>
+  <p>
+    I am optimizing my avatar for use in Hyperfy because that's currently my main metaverse platform. The [<a href="https://docs.hyperfy.io/avatars" target="new">Hyperfy documentation</a>] has a page for Avatars which lays out the rules for avatar visibility. In order to get a "Perfect" rated avatar, I need to constrain my model to 16,000 triangles, stay within the bounds of a 3m cube, only have a single mesh, and keep the file size below 5mb. 
+  </p>
+  <img src="avatarspecs.png">
+
+  <h2>Modeling</h2>
+  <p>
+    In order to get a general idea of scale within Blender I started by importing my old avatar into the scene. I will start by modeling the head, so I created a UV sphere mesh with 16 segments and placed it slightly above my old avatar's head (I want the new one to be a little taller) and scaled it until it's roughly head sized. I made a duplicate of this sphere and hid it, then deleted the old avatar because I can use this duplicate sphere as a guide for scale now. I went into sculpt mode, enabled symmetry on the X axis, and sculped out a basic shape of a skull.
+  </p>
+  <img src="skullpt.png">
+  <p>
+    To make the hood I created another sphere with the same number of segments and made it slightly bigger than my skull. I sculpted it until it resembled a hood hanging on top of the skull. The meshes had a bunch of overlapping segments, so I manually selected the faces and deleted them. 
+  </p>
+  <img src="overlaps.png">
+  <p>
+    I decided to try something new for the body, so I went into sculpt mode and enabled Dyntopo on my sculpt tool. This subdivides the surface automatically as I sculpt adding new triangles as needed. With this I can quickly scuplt a rough body shape. The downside to this approach is that it adds a lot of extra detail to the model which I will have to decimate and perform re-topology on later. I also sculpted the face using this method to give a roughly skull-like appearance. I didn't worry too much about it because decimation will hide all the weird mistakes. I tried modeling hands but decided to just go without them
+  </p>
+  <img src="skullpt3.png">
+  <p>
+    After the model looked about right I merged the head and body into a single mesh. Then I applied a decimate modifier to the mesh and tweaked the slider until it was exactly 4k faces. All of my faces are triangles so this should fit within the "Perfect" rating for Hyperfy.
+  </p>
+  <img src="decimated.png">
+  <p>
+    Next I added the VRM armature. I used the Blender VRM plugin to add > Armature > VRM Humanoid to add the standard VRM bones. Then I dragged the bones into the right place in Edit mode until they roughly matched the outline of the mesh. Then I selected the armature, then shift selected the mesh, and using ctrl P I set the armature as the parent of the mesh using automatic weights.
+  </p>
+  <img src="bones.png">
+  <p>
+    I exported as a VRM and imported into hyperfy to test, and everything worked! For some reason there is 4012 triangles so I had to tweak the decimate a little lower. The stance is a bit awkward but that's fine. 
+  </p>
+  <img src="bones.png"> 
+
+  <h2>Textures</h2>
+  <p>
+    Next I added the texture. I had to create a new material for the mesh, then UV unwrap the mesh. I let blender figure out the UV unwrapping because I don't really care about making it perfect. I used the Texture Paint mode to roughly paint on black clothes, white skull, and golden jaw. With that the avatar is complete
+  </p>
+  <img src="texturepaint.png"> 
+  <p>
+    After this I uploaded into hyperfy one last time just to check if it still fit the "Perfect" avatar criteria and it does. It might not look great but it was a good learning exercise. Now I will leave it to the expert artists to make my avatars for me. 
+  </p>
+  <img src="hyperfy.png"> 
+</div>
+<pre>
+
+</pre>
+
+<div class="center">
+Hyperlinks<br>
+--------------------------------<br>
+[<a href="https://m3org.com/" target="new">M3</a>] 
+[<a href="https://omigroup.org/" target="new">OMI</a>] <br>
+
+[<a href="https://hyperfy.io/" target="new">Hyperfy</a>] 
+[<a href="https://sougen.co/" target="new">Sougen</a>] 
+[<a href="https://webaverse.com/" target="new">Webaverse</a>] <br>
+
+[<a href="https://emotionull.art/" target="new">Phettaverse</a>] 
+[<a href="https://avirtualfuture-devlog.neocities.org/index.html" target="new">A</a>] 
+[<a href="https://www.anarchyarcade.com/" target="new">Anarchy Arcade</a>] <br>
+
+[<a href="https://vrm.dev/en/" target="new">VRM</a>] 
+[<a href="https://immersiveweb.dev/" target="new">WebXR</a>] 
+[<a href="https://www.khronos.org/gltf/" target="new">glTF</a>] 
+[<a href="https://blender.org/" target="new">Blender</a>] <br>
+
+[<a href="https://cyberdeck.cafe/" target="new">cyberdeck cafe</a>] 
+</div>
+
+<br><br>
+
+</body>
