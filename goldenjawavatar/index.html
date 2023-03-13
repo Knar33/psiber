@@ -36,7 +36,7 @@
   </p>
   <img src="overlaps.png">
   <p>
-    I decided to try something new for the body, so I went into sculpt mode and enabled Dyntopo on my sculpt tool. This subdivides the surface automatically as I sculpt adding new triangles as needed. With this I can quickly scuplt a rough body shape. The downside to this approach is that it adds a lot of extra detail to the model which I will have to decimate and perform re-topology on later. I also sculpted the face using this method to give a roughly skull-like appearance. I didn't worry too much about it because decimation will hide all the weird mistakes. I tried modeling hands but decided to just go without them
+    I decided to try something new for the body by going into sculpt mode and enabling Dyntopo on my sculpt tool. This subdivides the surface automatically as I sculpt adding new triangles as needed. With this I can quickly sculpt a rough body shape. The downside to this approach is that it adds a lot of extra detail to the model which I will have to decimate and perform re-topologize later. I also sculpted the face using this method to give a roughly skull-like appearance. I didn't worry too much about making it perfect because decimation will hide all the weird mistakes. I tried modeling hands but decided to just go without them.
   </p>
   <img src="skullpt3.png">
   <p>
@@ -44,7 +44,7 @@
   </p>
   <img src="decimated.png">
   <p>
-    Next I added the VRM armature. I used the Blender VRM plugin to add > Armature > VRM Humanoid to add the standard VRM bones. Then I dragged the bones into the right place in Edit mode until they roughly matched the outline of the mesh. Then I selected the armature, then shift selected the mesh, and using ctrl P I set the armature as the parent of the mesh using automatic weights. I exported as a VRM and imported into hyperfy to test, and everything worked! For some reason there is 4012 triangles so I had to tweak the decimate a little lower. The stance is a bit awkward but that's fine. 
+    Next I added the VRM armature. I used the Blender VRM plugin to add > Armature > VRM Humanoid to add the standard VRM bones. Then I dragged the bones into the right place in Edit mode until they roughly matched the outline of the mesh. Then I selected the armature, shift + selected the mesh, and using ctrl+P I set the armature as the parent of the mesh using automatic weights. I exported as a VRM and imported into hyperfy to test and everything worked! For some reason there was 4012 triangles so I had to tweak the decimate modifier a little lower. The stance is a bit awkward but that's fine. 
   </p>
   <img src="bones.png">
   <p>
@@ -55,11 +55,11 @@
   </p>
   <img src="texturepaint.png"> 
   <p>
-    I decided to add a zipper, but after texture painting I realized that my UV map wasn't good for that. The body of the hoodie has extremely small real-estate on the UV map so every pixel looks giant. I selected the faces on the front of the hoodie in UV edit mode, and unwrapped them, re-scaled, and moved them to an unused part of ther UV map. Then I was able to paint on a zipper. 
+    I decided to add a zipper, but after texture painting I realized that my UV map wasn't good for that. The body of the hoodie has extremely small real-estate on the UV map so every pixel looks giant. I selected the faces on the front of the hoodie in UV edit mode, unwrapped, re-scaled, and moved them to an unused part of ther UV map. Then I was able to paint on a zipper. 
   </p>
   <img src="uvzipper.png"> 
   <p>
-    I then maximized the roughness and decreased the specular in shading mode, to give everything a less shiny appearance. I'm not an expert at shading so I just stuck with the principled BSDF shader.
+    I then increased the roughness and decreased the specular in shading mode to give everything a less shiny appearance. I'm not an expert at shading so I just stuck with the principled BSDF shader.
   </p>
   <img src="shading.png"> 
   <p>
