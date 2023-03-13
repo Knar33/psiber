@@ -12,42 +12,55 @@
   <p>
     cairn [kairn]<br>
     noun<br>
-    a heap of stones set up as a landmark, monument, tombstone, etc. (dictionary.com)
+    a heap of stones set up as a landmark, monument, tombstone, etc.
   </p>
 
   <h2>Summary</h2>
 
   <p>
-    Cairn is a multiplayer virtual web experience where authenticated users can move and stack a collection of rocks on an island. 
-    The rocks will be locked in place after a period of time, forming a final piece of collaborative artwork.
+    I am building a world and an app in Hyperfy called Cairn. It will be a multiplayer virtual web experience where authenticated users can move and stack a collection of rocks on an island. The rocks will be locked in place after a period of time forming a final piece of collaborative artwork. NFTs will be distributed to users who participate in the world which I plan to incorporate into my future project. 
   </p>
 
   <h2>Design</h2>
   <p>
     Cairn will be built as a [<a href="https://hyperfy.io/" target="new">Hyperfy</a>] world with a custom app <br>
-    Users can authenticate by signing in with a wallet containing a Hyperfy World token. <br>
-    Authenticated Users can click a stone and it will go into their hand if: <br>
+    Users can authenticate by signing in with an Ethereum wallet which contains a Hyperfy world or a Webaverse Genesis Pass. <br>
+    Authenticated Users can click on a stone and it will go into their hand if: <br>
     <ol>
       <li>there are no stones on top of it</li>
-      <li>there are no users on top of it</li>
       <li>the user has no stone in their hand</li>
     </ol>
     Authenticated users with a stone in their hand can click to place the stone down at the cursor location if: <br>
     <ol>
       <li>the surface normal is facing upwards (you have to obey gravity)</li>
-      <li>there are no users standing in the vicinity</li>
     </ol>
     Users that log out with a stone in their hand drop it on the ground  <br><br>
 
-    I will release a contract and airdrop free tokens to the last person that touched each stone, or send one to each of the top active users if there is a lot of activity.<br>
-    The stones will be procedurally generated gltf files which I'm hoping I can do entirely on-chain. If I can't manage that I will generate them off-chain and release a static collection.
+    I will release an NFT collection of stones and airdrop free tokens to people who participate. The stones will be procedurally generated gltf files which I'm hoping I can do entirely on-chain. If I can't manage that I will generate them off-chain and release a static collection.
   </p>
 
   <h2>Development</h2>
   <p>
-    (੭｡╹▿╹｡)੭ 
+    There are two components I need to build for this project. The first is the Hyperfy app which will handle the 3d aspect and be a front-end experience for the user. I will also need a web server with a database to handle the user interactions with the rocks and persist state between visits. Hyperfy has no persistent state API so I need to do this myself. 
   </p>
+  <p>
+    The database will have 3 tables: Users, Rocks, and RockHistory. The tables  will look something like this:
+    <br><br>
 
+    Users:
+    <br>
+    | UserID | EthereumAddress | LastLogin |
+    <br><br>
+
+    Rocks:
+    <br>
+    | RockID | HeldByUser | PositionX | PositionY | PositionZ | ParentID | 
+    <br><br>
+
+    RockHistory:
+    <br>
+    | RockHistoryID | RockID | UserID | Event | 
+  </p>
 </div>
 
 <pre>                                                                                                                 
