@@ -18,13 +18,12 @@
   <h2>Summary</h2>
 
   <p>
-    I am building a world and an app in Hyperfy called Cairn. It will be a multiplayer virtual web experience where authenticated users can move and stack a collection of rocks on an island. The rocks will be locked in place after a period of time forming a final piece of collaborative artwork. NFTs will be distributed to users who participate in the world which I plan to incorporate into my future project. 
+    I am building a world and an app in Hyperfy called Cairn. It will be a multiplayer virtual web experience where authenticated users can move and stack a collection of rocks on an island. The rocks will be locked in place after a period of time forming a final piece of collaborative artwork. NFTs will be distributed to users who participate in the world which I plan to incorporate into a future project. 
   </p>
 
   <h2>Design</h2>
   <p>
-    Cairn will be built as a [<a href="https://hyperfy.io/" target="new">Hyperfy</a>] world with a custom app <br>
-    Users can authenticate by signing in with an Ethereum wallet which contains a Hyperfy world or a Webaverse Genesis Pass. <br>
+    Cairn will be built as a [<a href="https://hyperfy.io/" target="new">Hyperfy</a>] world with a custom app. Users can authenticate by signing in with an Ethereum wallet which contains a Hyperfy world or a Webaverse Genesis Pass. <br>
     Authenticated Users can click on a stone and it will go into their hand if: <br>
     <ol>
       <li>there are no stones on top of it</li>
@@ -34,32 +33,85 @@
     <ol>
       <li>the surface normal is facing upwards (you have to obey gravity)</li>
     </ol>
-    Users that log out with a stone in their hand drop it on the ground  <br><br>
+    Users that log out with a stone in their hand drop it on the ground.  <br><br>
 
     I will release an NFT collection of stones and airdrop free tokens to people who participate. The stones will be procedurally generated gltf files which I'm hoping I can do entirely on-chain. If I can't manage that I will generate them off-chain and release a static collection.
   </p>
 
   <h2>Development</h2>
   <p>
-    There are two components I need to build for this project. The first is the Hyperfy app which will handle the 3d aspect and be a front-end experience for the user. I will also need a web server with a database to handle the user interactions with the rocks and persist state between visits. Hyperfy has no persistent state API so I need to do this myself. 
+    There are two components I need to build for this project. The first is the Hyperfy app which will be a front-end 3d experience for the user. I will also need a web server with a database to handle the user interactions with the rocks and persist state between visits. Hyperfy has no persistent state API so I need to do this myself. 
   </p>
+  <p>
+    When a user logs into the world they will check to see how many users are in the world. If they are the only user in the world, they will need to perform cleanup of rocks held by users that logged out and populate the world with rocks. Some players may have logged out with a rock in their hand and we need to handle this when someone logs in. Make a web request to GET /cleanup which performs cleanup of orphaned rocks by setting all rocks with a non-null HeldByUser and a LastUpdate value greater than the update interval (plus some buffer time) with new values HeldByUser = null and ParentID = 0 (we discard the returned list of updated rocks). Then they will make a web request to GET /RockPositions and spawn an appropriately sized rock model for each rock returned. This will create an array of Rocks which will be broadcast. When another player logs in, they will receive this existing array of rocks and see that there are other players online, skipping the cleanup step.
+  </p>
+  <p>
+    After the world is populated and cleanup has occured, users will be prompted to sign the message "Sign into Cairn" with an Ethereum wallet. We take this signed message and send it along with the public key of the signer to POST /Authenticate. If the server responds with a 200:OK and a SessionToken, store the SessionToken in memory (no cookie).
+  </p>
+  <p>
+    Each rock will have an onClick function. When clicked, locally the client will check to see if the rock is already being carried (there will basically be a local version of the Rocks database) and if the user has a rock in their hand already. If that rockID is not being carried and the user does not have a rock in their hand, send a request to POST /PickupRock sending the rockID and sessionToken. If the server returns 200 then delete the rock object from the world and update the local table of rocks then dispatch a network update for the rock table. Update the table of heldRocks and dispatch that across the network.
+  </p>
+  <p>
+    For each rock in heldRocks, grab the holding user's hand position and update the rock object accordingly. When the table updates, if a new rock appears in the list then spawn it and associate it with the user. If a rock disappears from the table, delete the rock. 
+  </p>
+  <p>
+    Rocks will have the onclick function, and in the scenario where the user has a rock in their hand it will initiate the place down function. The ground will also have an onclick function that will check the same. When the user places down, first check if the normal is facing upwards. If so, send a request to POST /PlaceRock sending the RockID, position, parentid, and sessionToken. The terrain is parentid = 0, all rocks have their own rockid that will be used as the parentid. If the request succeeds, update the heldRocks table and the rocks tables and dispatch them across the network. Delete the rock locally from the players hand and create the new rock object where it was placed. 
+  </p>
+  <p>
+    Other players will be listening for changes to the rocks and heldRocks tables. When they receive updates, they will spawn/despawn rocks accordingly. 
+  </p>
+  <p>
+    When the server restarts, populate an in-memory array of all users who have authenticated in the past 24 hours along with their sessionKey from the database.
+  </p>
+
+  <h2>Database</h2>
   <p>
     The database will have 3 tables: Users, Rocks, and RockHistory. The tables  will look something like this:
     <br><br>
 
     Users:
     <br>
-    | UserID | EthereumAddress | LastLogin |
+    | UserID | EthereumAddress | LastLogin | SessionKey |
     <br><br>
 
     Rocks:
     <br>
-    | RockID | HeldByUser | PositionX | PositionY | PositionZ | ParentID | 
+    | RockID | HeldByUser | PositionX | PositionY | PositionZ | ParentID | RockSize | LastUpdate |
     <br><br>
 
     RockHistory:
     <br>
     | RockHistoryID | RockID | UserID | Event | 
+    <br><br>
+  </p>
+  <h2>API</h2>
+  <p>
+    The entire API will be rate limited. The update function will have a global rate limit of once per minute. All other APIs will have rate limits based on IP and frequency of acceptable use. All API endpoints except for the GET /RockPositions and Get /Cleanup will require authentication.
+  </p>
+  <p>
+    GET /RockPositions
+    <br>
+    Returns a list of all rock IDs that are not held by a user plus their parentID, RockSize, and position.
+    <br><br>
+
+    GET /Cleanup
+    <br>
+    For each rock with HeldByUser != null and LastUpdate > the update interval + buffer, set HeldByUser = null and ParentID = 0. Also adds an entry to RockHistory with Event = Cleanup. Returns list of orphaned rocks and their new positions.
+    <br><br>
+
+    POST /Authenticate
+    <br>
+    User sends their public key and the signed message. The server validates that the message was signed by the public key and that the message is valid. Then the server checks if the user owns a Hyperfy world or a Webaverse Genesis pass. If both of those are true then the server checks if the user exists, if not it creates a new user. When we have a matching userID, we update their LastLogin and generate a session token and returnthe sessionToken.
+    <br><br>
+
+    POST /PickupRock
+    <br>
+    User sends their auth token and a rockid. If the rock is not already held and the sessiontoken is valid, check if the rock has no other rocks that have their parentid = this rockid. If it has no rocks parented to it, set HeldByUser to the matching user. Then create a new entry in rockhistory. then return 200. Otherwise return an error. 
+    <br><br>
+
+    POST /PlaceRock
+    <br>
+    User sends their sessiontoken, rockid, parentid, and position. If the user is authenticated, and they are actually holding that rock, set HeldByUser = null, parentid = parentid, and update the position. Then create a new entry in rockhistory and return 200. Otherwise return an error.
   </p>
 </div>
 
