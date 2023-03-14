@@ -58,7 +58,7 @@
     Rocks will have the onclick function, and in the scenario where the user has a rock in their hand it will initiate the place down function. The ground will also have an onclick function that will check the same. When the user places down, first check if the normal is facing upwards. If so, send a request to POST /PlaceRock sending the RockID, position, parentid, and sessionToken. The terrain is parentid = 0, all rocks have their own rockid that will be used as the parentid. If the request succeeds, update the heldRocks table and the rocks tables and dispatch them across the network. Delete the rock locally from the players hand and create the new rock object where it was placed. 
   </p>
   <p>
-    Other players will be listening for changes to the rocks tables. When they receive updates, they will spawn/despawn rocks accordingly and remake their heldRocks table. On a regular interval, players that are holding rocks will send a request to POST /UpdateHeldRock with their current world position. This is the position that will be used if a player logs out with a rock in their hand.
+    Other players will be listening for changes to the rocks tables. When they receive updates, they will spawn/despawn rocks by comparing the lastUpdate of each rock with the time they last updated their rocks table, store the current time (to check for the next updates), and remake their heldRocks table. On a regular interval, players that are holding rocks will send a request to POST /UpdateHeldRock with their current world position. This is the position that will be used if a player logs out with a rock in their hand.
   </p>
   <p>
     When the server restarts, populate an in-memory array on the server of all users who have authenticated in the past 24 hours along with their sessionKey from the database.
@@ -101,17 +101,17 @@
 
     POST /Authenticate
     <br>
-    User sends their public key and the signed message. The server validates that the message was signed by the public key and that the message is valid. Then the server checks if the user owns a Hyperfy world or a Webaverse Genesis pass. If both of those are true then the server checks if the user exists, if not it creates a new user. When we have a matching userID, we update their LastLogin and generate a session token and returnthe sessionToken. If a user is not authenticated or some other error has occured, display that to the user somehow.
+    User sends their public key and the signed message. The server validates that the message was signed by the public key and that the message is valid. Then the server checks if the user owns a Hyperfy world or a Webaverse Genesis pass. If both of those are true then the server checks if the user exists, if not it creates a new user. When we have a matching userID, we update their LastLogin and generate a session token and return the sessionToken. If a user is not authenticated or some other error has occured, display that to the user somehow.
     <br><br>
 
     POST /PickupRock
     <br>
-    User sends their auth token and a rockid. If the rock is not already held and the sessiontoken is valid, check if the rock has no other rocks that have their parentid = this rockid. If it has no rocks parented to it, set HeldByUser to the matching user. Then create a new entry in rockhistory. then return 200. Otherwise return an error. If a user is not authenticated or some other error has occured, display that to the user somehow.
+    User sends their auth token and a rockid. If the rock is not already held and the sessiontoken is valid, check if the rock has no other rocks that have their parentid = this rockid. If it has no rocks parented to it, set HeldByUser to the matching user. Then create a new entry in rockhistory with event=pickup. then return 200. Otherwise return an error. If a user is not authenticated or some other error has occured, display that to the user somehow.
     <br><br>
 
     POST /PlaceRock
     <br>
-    User sends their sessiontoken, rockid, parentid, and position. If the user is authenticated, and they are actually holding that rock, set HeldByUser = null, parentid = parentid, and update the position. Then create a new entry in rockhistory and return 200. Otherwise return an error. If a user is not authenticated or some other error has occured, display that to the user somehow.
+    User sends their sessiontoken, rockid, parentid, and position. If the user is authenticated, and they are actually holding that rock, set HeldByUser = null, parentid = parentid, and update the position. Then create a new entry in rockhistory with event=place and return 200. Otherwise return an error. If a user is not authenticated or some other error has occured, display that to the user somehow.
     <br><br>
 
     POST /UpdateHeldRock
